@@ -8,5 +8,5 @@ class PuddingClient(
     authorization: String,
     http: HttpClient
 ) {
-    val users = UserService(puddingUrl, http)
+    val users = UserService(puddingUrl, authorization, http)
 }
