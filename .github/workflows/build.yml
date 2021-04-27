@@ -1,0 +1,77 @@
+name: Continuous Integration
+
+# Controls when the action will run. Triggers the workflow on push or pull request.
+on: [ push, pull_request ]
+
+env:
+  IMAGE_NAME: gabriela-image-server
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - uses: actions/checkout@v2
+      with: 
+        submodules: recursive
+
+    - name: Get current time
+      uses: gerred/actions/current-time@master
+      id: current-time
+
+    - name: Setup Java JDK
+      uses: actions/setup-java@v1.4.3
+      with:
+        java-version: 15
+
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+
+    # Runs a single command using the runners shell
+    - name: Build with Gradle
+      run: "./gradlew build -Dgithub.build.id=$GITHUB_RUN_ID -Dbuild.number=$GITHUB_RUN_NUMBER -Dgit.branch=$GITHUB_REF -Dcommit.hash=$GITHUB_SHA -Dcompiled.at=${{ steps.current-time.outputs.time }}"
+
+    # Publish Artifacts
+    - name: Publish to PerfectDreams' repository
+      env:
+        USERNAME: ${{ secrets.PERFECTDREAMS_REPO_USERNAME }}
+        PASSWORD: ${{ secrets.PERFECTDREAMS_REPO_PASSWORD }}
+      run: "./gradlew publish -DUSERNAME=$USERNAME -DPASSWORD=$PASSWORD"
+
+    # Now we are going to copy some of the files for our Docker build
+    - name: Copy assets for Docker build
+      run: "cp -r server/build/libs/server-*-all.jar docker/server/files/server.jar"
+
+    - name: Grant execute permission for the start script
+      run: chmod +x docker/server/files/start.sh
+
+    - name: Build Gabriela's Image Server Docker image
+      run: |
+        cd docker/server/
+        docker build . --file Dockerfile --tag $IMAGE_NAME --label "runnumber=${GITHUB_RUN_ID}"
+
+    - name: Log into GitHub registry
+      run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+    - name: Push Docker image to GitHub registry
+      run: |
+        cd docker/gabriela-image-server/
+        IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME
+
+        # Change all uppercase to lowercase
+        IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
+        # Strip git ref prefix from version
+        VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+        # Strip "v" prefix from tag name
+        [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+        # Use Docker `latest` tag convention
+        [ "$VERSION" == "master" ] && VERSION=latest
+        echo IMAGE_ID=$IMAGE_ID
+        echo VERSION=$VERSION
+        docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
+        docker push $IMAGE_ID:$VERSION
