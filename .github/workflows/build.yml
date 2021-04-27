@@ -4,7 +4,7 @@ name: Continuous Integration
 on: [ push, pull_request ]
 
 env:
-  IMAGE_NAME: gabriela-image-server
+  IMAGE_NAME: pudding-server
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -60,7 +60,7 @@ jobs:
 
     - name: Push Docker image to GitHub registry
       run: |
-        cd docker/gabriela-image-server/
+        cd docker/server/
         IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME
 
         # Change all uppercase to lowercase
