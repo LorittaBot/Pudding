@@ -4,15 +4,15 @@
 
 **🚧 Experiemental Project 🚧**
 
-Pudding is a REST API used for Loritta Cinnamon!
+Pudding is a RPC API used for Loritta Cinnamon!
 
 (Still not finished, that's why the readme is kinda... useless)
 
 # Docker
 
 ```
-docker pull ghcr.io/lorittabot/pudding:latest
-docker run -p 8080:8080 -v pudding.conf:/home/pudding/:ro ghcr.io/lorittabot/pudding
+docker pull ghcr.io/lorittabot/pudding-server:latest
+docker run -p 8080:8080 -v pudding.conf:/home/pudding/:ro ghcr.io/lorittabot/pudding-server
 ```
 
 `pudding.conf` is Pudding's configuration file.
