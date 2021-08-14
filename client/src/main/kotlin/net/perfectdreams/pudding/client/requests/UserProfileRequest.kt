@@ -8,7 +8,7 @@ import net.perfectdreams.loritta.pudding.common.data.UserProfile
 import net.perfectdreams.loritta.pudding.common.endpoints.EndpointsV1
 import net.perfectdreams.pudding.client.services.Service
 
-class UserProfileRequest(private val id: Long, private val service: Service) {
+class UserProfileRequest(private val service: Service, private val id: Long) {
     suspend fun retrieve(): UserProfile? {
         val response = service.call(EndpointsV1.GET_USER) {
             it[EndpointsV1.UserId] = id.toString()

@@ -12,7 +12,10 @@ dependencies {
     implementation(kotlin("stdlib"))
 
     // Kotlinx Serialization
-    api("org.jetbrains.kotlinx:kotlinx-serialization-core:${Versions.KOTLIN_SERIALIZATION}")
+    api("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.KOTLIN_SERIALIZATION}")
+
+    // Used for serialization
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.2.1")
 }
 
 publishing {

@@ -31,6 +31,12 @@ dependencies {
     api("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.KOTLIN_SERIALIZATION}")
     api("org.jetbrains.kotlinx:kotlinx-serialization-hocon:${Versions.KOTLIN_SERIALIZATION}")
 
+    // Logging
+    implementation("io.github.microutils:kotlin-logging-jvm:2.0.10")
+
+    // Used for serialization
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.2.1")
+
     // Async Appender is broken in alpha5
     // https://stackoverflow.com/questions/58742485/logback-error-no-attached-appenders-found
     api("ch.qos.logback:logback-classic:1.3.0-alpha4")
