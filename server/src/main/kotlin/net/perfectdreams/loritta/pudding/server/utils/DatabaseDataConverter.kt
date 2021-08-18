@@ -2,10 +2,12 @@ package net.perfectdreams.loritta.pudding.server.utils
 
 import kotlinx.datetime.Instant
 import net.perfectdreams.loritta.pudding.common.data.Marriage
+import net.perfectdreams.loritta.pudding.common.data.ServerConfigRoot
 import net.perfectdreams.loritta.pudding.common.data.ShipEffect
 import net.perfectdreams.loritta.pudding.common.data.UserProfile
 import net.perfectdreams.loritta.pudding.server.database.tables.Marriages
 import net.perfectdreams.loritta.pudding.server.database.tables.Profiles
+import net.perfectdreams.loritta.pudding.server.database.tables.ServerConfigs
 import net.perfectdreams.loritta.pudding.server.database.tables.ShipEffects
 import org.jetbrains.exposed.sql.ResultRow
 
@@ -28,4 +30,9 @@ fun ShipEffect.Companion.fromRow(row: ResultRow) = ShipEffect(
     row[ShipEffects.user2Id],
     row[ShipEffects.editedShipValue],
     Instant.fromEpochMilliseconds(row[ShipEffects.expiresAt])
+)
+
+fun ServerConfigRoot.Companion.fromRow(row: ResultRow) = ServerConfigRoot(
+    row[ServerConfigs.id].value,
+    row[ServerConfigs.localeId]
 )

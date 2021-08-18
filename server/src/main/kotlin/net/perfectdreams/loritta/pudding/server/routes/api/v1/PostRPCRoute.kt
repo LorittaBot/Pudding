@@ -8,6 +8,7 @@ import mu.KotlinLogging
 import net.perfectdreams.loritta.pudding.common.endpoints.EndpointsV1
 import net.perfectdreams.loritta.pudding.common.requests.GetMarriageByIdRequest
 import net.perfectdreams.loritta.pudding.common.requests.GetMarriageByUserIdRequest
+import net.perfectdreams.loritta.pudding.common.requests.GetServerConfigRootByIdRequest
 import net.perfectdreams.loritta.pudding.common.requests.GetShipEffectsForUserIdRequest
 import net.perfectdreams.loritta.pudding.common.requests.GetSonhosRankPositionBySonhosRequest
 import net.perfectdreams.loritta.pudding.common.requests.GetUserProfileRequest
@@ -17,6 +18,7 @@ import net.perfectdreams.loritta.pudding.common.responses.UnknownRequestErrorRes
 import net.perfectdreams.loritta.pudding.server.Pudding
 import net.perfectdreams.loritta.pudding.server.requesthandlers.GetMarriageByIdRequestHandler
 import net.perfectdreams.loritta.pudding.server.requesthandlers.GetMarriageByUserIdRequestHandler
+import net.perfectdreams.loritta.pudding.server.requesthandlers.GetServerConfigRootByIdRequestHandler
 import net.perfectdreams.loritta.pudding.server.requesthandlers.GetShipEffectsForUserIdRequestHandler
 import net.perfectdreams.loritta.pudding.server.requesthandlers.GetSonhosRankPositionBySonhosRequestHandler
 import net.perfectdreams.loritta.pudding.server.requesthandlers.GetUserProfileByIdRequestHandler
@@ -34,6 +36,9 @@ class PostRPCRoute(m: Pudding) : RequiresAuthenticationAPIv1Route(EndpointsV1.RP
             // ===[ USER PROFILE ]===
             is GetUserProfileRequest -> GetUserProfileByIdRequestHandler.handle(m, call, request)
             is GetSonhosRankPositionBySonhosRequest -> GetSonhosRankPositionBySonhosRequestHandler.handle(m, call, request)
+
+            // ===[ SERVER CONFIGS ]==
+            is GetServerConfigRootByIdRequest -> GetServerConfigRootByIdRequestHandler.handle(m, call, request)
 
             // ===[ MARRIAGES ]===
             is GetMarriageByIdRequest -> GetMarriageByIdRequestHandler.handle(m, call, request)
