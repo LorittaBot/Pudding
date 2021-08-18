@@ -11,8 +11,6 @@ import org.jetbrains.exposed.sql.select
 
 object GetSonhosRankPositionBySonhosRequestHandler : RequestHandler<GetSonhosRankPositionBySonhosRequest> {
     override suspend fun handle(m: Pudding, call: ApplicationCall, request: GetSonhosRankPositionBySonhosRequest) {
-        val sonhosPosition = request.sonhos
-
         // TODO: This is not a *good* way to get an user's ranking if there are duplicates, maybe use DENSE_RANK? https://www.postgresqltutorial.com/postgresql-dense_rank-function/
         val position = m.database.transaction {
                 Profiles.select { Profiles.money greaterEq request.sonhos }
