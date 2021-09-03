@@ -45,4 +45,4 @@ jobs:
       run: "./gradlew publish -DUSERNAME=$USERNAME -DPASSWORD=$PASSWORD"
 
     - name: Publish to Docker
-      run: "./gradlew :backend:jib -Dgithub.build.id=$GITHUB_RUN_ID -Dbuild.number=$GITHUB_RUN_NUMBER -Dgit.branch=$GITHUB_REF -Dcommit.hash=$GITHUB_SHA -Dcompiled.at=${{ steps.current-time.outputs.time }}"
+      run: "./gradlew :server:jib -Dgithub.build.id=$GITHUB_RUN_ID -Dbuild.number=$GITHUB_RUN_NUMBER -Dgit.branch=$GITHUB_REF -Dcommit.hash=$GITHUB_SHA -Dcompiled.at=${{ steps.current-time.outputs.time }}"
