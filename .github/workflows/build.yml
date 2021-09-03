@@ -4,7 +4,8 @@ name: Continuous Integration
 on: [ push, pull_request ]
 
 env:
-  IMAGE_NAME: pudding-server
+  DOCKER_USERNAME: "${{ github.actor }}"
+  DOCKER_PASSWORD: "${{ secrets.GITHUB_TOKEN }}"
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -43,36 +44,5 @@ jobs:
         PASSWORD: ${{ secrets.PERFECTDREAMS_REPO_PASSWORD }}
       run: "./gradlew publish -DUSERNAME=$USERNAME -DPASSWORD=$PASSWORD"
 
-    # Now we are going to copy some of the files for our Docker build
-    - name: Copy assets for Docker build
-      run: "cp -r server/build/libs/server-*-all.jar docker/server/files/server.jar"
-
-    - name: Grant execute permission for the start script
-      run: chmod +x docker/server/files/start.sh
-
-    - name: Build Gabriela's Image Server Docker image
-      run: |
-        cd docker/server/
-        docker build . --file Dockerfile --tag $IMAGE_NAME --label "runnumber=${GITHUB_RUN_ID}"
-
-    - name: Log into GitHub registry
-      run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-
-    - name: Push Docker image to GitHub registry
-      run: |
-        cd docker/server/
-        IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME
-
-        # Change all uppercase to lowercase
-        IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
-        # Strip git ref prefix from version
-        VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-        # Strip "v" prefix from tag name
-        [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
-        # Use Docker `latest` tag convention
-        [ "$VERSION" == "master" ] && VERSION=latest
-        [ "$VERSION" == "main" ] && VERSION=latest
-        echo IMAGE_ID=$IMAGE_ID
-        echo VERSION=$VERSION
-        docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
-        docker push $IMAGE_ID:$VERSION
+    - name: Publish to Docker
+      run: "./gradlew :backend:jib -Dgithub.build.id=$GITHUB_RUN_ID -Dbuild.number=$GITHUB_RUN_NUMBER -Dgit.branch=$GITHUB_REF -Dcommit.hash=$GITHUB_SHA -Dcompiled.at=${{ steps.current-time.outputs.time }}"

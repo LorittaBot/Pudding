@@ -4,6 +4,7 @@ plugins {
     kotlin("jvm") version Versions.KOTLIN
     kotlin("plugin.serialization") version Versions.KOTLIN
     id("com.github.johnrengelman.shadow") version "5.2.0"
+    id("com.google.cloud.tools.jib") version Versions.JIB
 }
 
 dependencies {
@@ -40,6 +41,25 @@ dependencies {
     // Async Appender is broken in alpha5
     // https://stackoverflow.com/questions/58742485/logback-error-no-attached-appenders-found
     api("ch.qos.logback:logback-classic:1.3.0-alpha4")
+}
+
+jib {
+    container {
+        ports = listOf("8080")
+    }
+
+    to {
+        image = "ghcr.io/lorittabot/pudding-server"
+
+        auth {
+            username = System.getProperty("DOCKER_USERNAME") ?: System.getenv("DOCKER_USERNAME")
+            password = System.getProperty("DOCKER_PASSWORD") ?: System.getenv("DOCKER_PASSWORD")
+        }
+    }
+
+    from {
+        image = "openjdk:15.0.2-slim-buster"
+    }
 }
 
 tasks.withType<ShadowJar>() {
