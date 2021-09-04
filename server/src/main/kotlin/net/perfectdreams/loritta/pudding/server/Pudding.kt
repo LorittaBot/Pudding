@@ -45,7 +45,7 @@ class Pudding(val config: PuddingConfig) {
                 call.attributes.put(TimeToProcess, System.currentTimeMillis())
                 val userAgent = call.request.userAgent()
                 val ip = call.request.local.remoteHost
-                val queryString = "?" + call.request.queryString()
+                val queryString = call.request.queryString().let { if (it.isNotBlank()) "?$it" else "" }
                 val httpMethod = call.request.httpMethod.value
 
                 logger.info { "$ip (${userAgent}): $httpMethod ${call.request.path()}${queryString}" }
@@ -55,7 +55,7 @@ class Pudding(val config: PuddingConfig) {
                 val originalStartTime = call.attributes[TimeToProcess]
                 val userAgent = call.request.userAgent()
                 val ip = call.request.local.remoteHost
-                val queryString = "?" + call.request.queryString()
+                val queryString = call.request.queryString().let { if (it.isNotBlank()) "?$it" else "" }
                 val httpMethod = call.request.httpMethod.value
 
                 logger.info { "$ip (${userAgent}): $httpMethod ${call.request.path()}${queryString} - OK! ${System.currentTimeMillis() - originalStartTime}ms" }
